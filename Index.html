@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Pessoas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+label {
+    margin-top: 10px;
+    text-align: left;
+}
+
+input {
+    margin-top: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 18px); /* Adjust for padding and border */
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#limparRegistros {
+    background-color: #dc3545;
+    margin-top: 10px;
+}
+
+#limparRegistros:hover {
+    background-color: #c82333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    text-align: left;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Pessoas</h1>
+        <form id="registroForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" required>
+            <label for="peso">Peso:</label>
+            <input type="number" id="peso" required>
+            <button type="submit">Registrar</button>
+        </form>
+        <button id="limparRegistros">Limpar Registros</button>
+        <ul id="listaRegistros"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const registroForm = document.getElementById('registroForm');
+    const listaRegistros = document.getElementById('listaRegistros');
+    const limparRegistrosBtn = document.getElementById('limparRegistros');
+
+    // Função para carregar registros salvos
+    function carregarRegistros() {
+        const registros = JSON.parse(localStorage.getItem('registros')) || [];
+        registros.forEach(registro => {
+            adicionarRegistroNaLista(registro);
+        });
+    }
+
+    // Função para adicionar um registro na lista
+    function adicionarRegistroNaLista(registro) {
+        const li = document.createElement('li');
+        li.textContent = `Nome: ${registro.nome}, Peso: ${registro.peso}kg`;
+        listaRegistros.appendChild(li);
+    }
+
+    // Função para salvar registro no localStorage
+    function salvarRegistro(nome, peso) {
+        const registros = JSON.parse(localStorage.getItem('registros')) || [];
+        registros.push({ nome, peso });
+        localStorage.setItem('registros', JSON.stringify(registros));
+        adicionarRegistroNaLista({ nome, peso });
+    }
+
+    // Manipulador de evento para o formulário
+    registroForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const nome = document.getElementById('nome').value;
+        const peso = document.getElementById('peso').value;
+
+        if (nome && peso) {
+            salvarRegistro(nome, peso);
+            registroForm.reset();
+        }
+    });
+
+    // Função para limpar todos os registros
+    function limparRegistros() {
+        localStorage.removeItem('registros');
+        while (listaRegistros.firstChild) {
+            listaRegistros.removeChild(listaRegistros.firstChild);
+        }
+    }
+
+    // Manipulador de evento para o botão de limpar registros
+    limparRegistrosBtn.addEventListener('click', limparRegistros);
+
+    // Carregar registros ao iniciar
+    carregarRegistros();
+});
+
+</script>
+</html>
